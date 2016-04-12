@@ -4,12 +4,14 @@ import android.content.Context;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -30,17 +32,26 @@ public class ClubsActivity extends ActionBarActivity implements HandleJson.Parse
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_clubs);
-        HandleJson clubsJson = new HandleJson("http://eventapi.biltek.club/kulup", this);
-        clubsJson.fetchJSON();
-        while (clubsJson.parsingComplete) {
-            try {
-                Thread.sleep(1);
-            } catch (InterruptedException e) {
+        final ClubsActivity thisClass = this;
+        ((Button) findViewById(R.id.button2)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i("tr.edu.ybu.eventybu", "Parsing Start");
+                HandleJson clubsJson = new HandleJson("http://eventapi.biltek.club/kulup", thisClass);
+                clubsJson.fetchJSON();
+                while (clubsJson.parsingComplete) {
+                    try {
+                        Thread.sleep(10);
+                        Log.i("tr.edu.ybu.eventybu", "Parsing check");
+                    } catch (InterruptedException e) {
+                    }
+                }
+                Log.i("tr.edu.ybu.eventybu", "Parsing complete");
+                ListView clubsList = (ListView) findViewById(R.id.clubsList);
+                ListAdapter clubsListAdapter = new ClubsListAdapter(getApplicationContext(), R.layout.clubs_row_view, clubs);
+                clubsList.setAdapter(clubsListAdapter);
             }
-        }
-        ListView clubsList = (ListView) findViewById(R.id.clubsList);
-        ListAdapter clubsListAdapter = new ClubsListAdapter(getApplicationContext(), R.layout.clubs_row_view, clubs);
-        clubsList.setAdapter(clubsListAdapter);
+        });
 
         //clubsList.setAdapter();
     }
@@ -93,6 +104,7 @@ public class ClubsActivity extends ActionBarActivity implements HandleJson.Parse
             try {
                 line1.setText(values.getJSONObject(position).getString("kulup_ad"));
                 line2.setText(values.getJSONObject(position).getString("kulup_aciklama"));
+                Log.i("tr.edu.ybu.eventybu", values.getJSONObject(position).getString("kulup_ad")+": "+values.getJSONObject(position).getString("kulup_aciklama"));
                 line2.setMovementMethod(new ScrollingMovementMethod());
             } catch (JSONException e) {
                 e.printStackTrace();

@@ -42,6 +42,7 @@ public class HandleJson {
                     String data = convertStreamToString(stream);
                     parseMethod.readAndParseJSON(data);
                     stream.close();
+                    parsingComplete = false;
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
