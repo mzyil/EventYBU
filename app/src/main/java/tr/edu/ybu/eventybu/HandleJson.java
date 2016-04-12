@@ -3,46 +3,26 @@ package tr.edu.ybu.eventybu;
 /**
  * Created by YILDIZ on 12.04.2016.
  */
-import android.annotation.SuppressLint;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+import org.json.JSONException;
 
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
 
 public class HandleJson {
+    private final ParseMethod parseMethod;
     public volatile boolean parsingComplete = true;
-    private ArrayList<JSONArray> takvimler = new ArrayList<JSONArray>();
     private String urlString = null;
 
-    public HandleJson(String url){
+    public HandleJson(String url, ParseMethod parseMethod){
         this.urlString = url;
+        this.parseMethod = parseMethod;
     }
 
     static String convertStreamToString(InputStream is) {
         java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
         return s.hasNext() ? s.next() : "";
-    }
-
-    public ArrayList<JSONArray> getTakvimler(){
-        return takvimler;
-    }
-
-    @SuppressLint("NewApi")
-    public void readAndParseJSON(String in) {
-        try {
-            JSONObject tumTakvimler  = new JSONObject(in);
-            takvimler.add(tumTakvimler.getJSONArray("graduated"));
-            takvimler.add(tumTakvimler.getJSONArray("undergraduate"));
-            takvimler.add(tumTakvimler.getJSONArray("ydyo"));
-            takvimler.add(tumTakvimler.getJSONArray("medicine"));
-            parsingComplete = false;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     public void fetchJSON(){
@@ -60,7 +40,7 @@ public class HandleJson {
                     conn.connect();
                     InputStream stream = conn.getInputStream();
                     String data = convertStreamToString(stream);
-                    readAndParseJSON(data);
+                    parseMethod.readAndParseJSON(data);
                     stream.close();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -68,5 +48,9 @@ public class HandleJson {
             }
         });
         thread.start();
+    }
+
+    public interface ParseMethod {
+        void readAndParseJSON(String in) throws JSONException;
     }
 }
