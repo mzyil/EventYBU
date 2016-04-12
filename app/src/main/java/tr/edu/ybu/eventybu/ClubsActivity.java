@@ -32,26 +32,20 @@ public class ClubsActivity extends ActionBarActivity implements HandleJson.Parse
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_clubs);
-        final ClubsActivity thisClass = this;
-        ((Button) findViewById(R.id.button2)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.i("tr.edu.ybu.eventybu", "Parsing Start");
-                HandleJson clubsJson = new HandleJson("http://eventapi.biltek.club/kulup", thisClass);
-                clubsJson.fetchJSON();
-                while (clubsJson.parsingComplete) {
-                    try {
-                        Thread.sleep(10);
-                        Log.i("tr.edu.ybu.eventybu", "Parsing check");
-                    } catch (InterruptedException e) {
-                    }
-                }
-                Log.i("tr.edu.ybu.eventybu", "Parsing complete");
-                ListView clubsList = (ListView) findViewById(R.id.clubsList);
-                ListAdapter clubsListAdapter = new ClubsListAdapter(getApplicationContext(), R.layout.clubs_row_view, clubs);
-                clubsList.setAdapter(clubsListAdapter);
+        Log.i("tr.edu.ybu.eventybu", "Parsing Start");
+        HandleJson clubsJson = new HandleJson("http://eventapi.biltek.club/kulup", this);
+        clubsJson.fetchJSON();
+        while (clubsJson.parsingComplete) {
+            try {
+                Thread.sleep(10);
+                Log.i("tr.edu.ybu.eventybu", "Parsing check");
+            } catch (InterruptedException e) {
             }
-        });
+        }
+        Log.i("tr.edu.ybu.eventybu", "Parsing complete");
+        ListView clubsList = (ListView) findViewById(R.id.clubsList);
+        ListAdapter clubsListAdapter = new ClubsListAdapter(getApplicationContext(), R.layout.clubs_row_view, clubs);
+        clubsList.setAdapter(clubsListAdapter);
 
         //clubsList.setAdapter();
     }
