@@ -47,6 +47,7 @@ public class ClubsActivity extends ActionBarActivity implements HandleJson.Parse
         ListAdapter clubsListAdapter = new ClubsListAdapter(getApplicationContext(), R.layout.clubs_row_view, clubs);
         clubsList.setAdapter(clubsListAdapter);
 
+
         //clubsList.setAdapter();
     }
 
@@ -84,6 +85,7 @@ public class ClubsActivity extends ActionBarActivity implements HandleJson.Parse
 
         public ClubsListAdapter(Context context, int resource, JSONArray values) {
             super(context, resource);
+            this.context = context;
             this.values = values;
         }
 
@@ -98,7 +100,7 @@ public class ClubsActivity extends ActionBarActivity implements HandleJson.Parse
             try {
                 line1.setText(values.getJSONObject(position).getString("kulup_ad"));
                 line2.setText(values.getJSONObject(position).getString("kulup_aciklama"));
-                Log.i("tr.edu.ybu.eventybu", values.getJSONObject(position).getString("kulup_ad")+": "+values.getJSONObject(position).getString("kulup_aciklama"));
+                Log.i("tr.edu.ybu.eventybu", values.getJSONObject(position).getString("kulup_ad") + ": " + values.getJSONObject(position).getString("kulup_aciklama"));
                 line2.setMovementMethod(new ScrollingMovementMethod());
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -110,6 +112,11 @@ public class ClubsActivity extends ActionBarActivity implements HandleJson.Parse
                 }
             });
             return rowView;
+        }
+
+        @Override
+        public int getCount() {
+            return values.length();
         }
     }
 }
