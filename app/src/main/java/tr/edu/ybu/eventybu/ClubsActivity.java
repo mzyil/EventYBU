@@ -1,8 +1,8 @@
 package tr.edu.ybu.eventybu;
 
 import android.content.Context;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,7 +11,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -19,9 +18,6 @@ import android.widget.TextView;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class ClubsActivity extends ActionBarActivity implements HandleJson.ParseMethod {
@@ -78,7 +74,10 @@ public class ClubsActivity extends ActionBarActivity implements HandleJson.Parse
         JSONArray clubs = new JSONArray(in);
         this.clubs = clubs;
     }
-
+    static class viewHolder{
+        TextView ClubName;
+        TextView ClubDesc;
+    }
     public class ClubsListAdapter extends ArrayAdapter<JSONObject> {
         Context context;
         JSONArray values;
@@ -93,25 +92,31 @@ public class ClubsActivity extends ActionBarActivity implements HandleJson.Parse
         public View getView(final int position, View convertView, ViewGroup parent) {
             LayoutInflater inflater = (LayoutInflater) context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            final View rowView = inflater.inflate(R.layout.clubs_row_view, parent, false);
-            TextView line1 = (TextView) rowView.findViewById(R.id.clubName);
-            TextView line2 = (TextView) rowView.findViewById(R.id.clubDesc);
-
+            viewHolder holder;
+            if(convertView==null) {
+               convertView = inflater.inflate(R.layout.clubs_row_view, parent, false);
+                holder = new viewHolder();
+                holder.ClubName = (TextView) convertView.findViewById(R.id.clubName);
+                holder.ClubDesc = (TextView) convertView.findViewById(R.id.clubDesc);
+                convertView.setTag(holder);
+            }
+            else{
+                holder=(viewHolder)convertView.getTag();
+            }
             try {
-                line1.setText(values.getJSONObject(position).getString("kulup_ad"));
-                line2.setText(values.getJSONObject(position).getString("kulup_aciklama"));
+                holder.ClubName.setText(values.getJSONObject(position).getString("kulup_ad"));
+                holder.ClubDesc.setText(values.getJSONObject(position).getString("kulup_aciklama"));
                 Log.i("tr.edu.ybu.eventybu", values.getJSONObject(position).getString("kulup_ad") + ": " + values.getJSONObject(position).getString("kulup_aciklama"));
-                line2.setMovementMethod(new ScrollingMovementMethod());
+                holder.ClubDesc.setMovementMethod(new ScrollingMovementMethod());
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-
-            rowView.setOnClickListener(new View.OnClickListener() {
+            convertView.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
 
                 }
             });
-            return rowView;
+            return convertView;
         }
 
         @Override
