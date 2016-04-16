@@ -3,7 +3,6 @@ package tr.edu.ybu.eventybu;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -74,40 +73,45 @@ public class ClubsActivity extends ActionBarActivity implements HandleJson.Parse
         JSONArray clubs = new JSONArray(in);
         this.clubs = clubs;
     }
-    static class viewHolder{
-        TextView ClubName;
-        TextView ClubDesc;
+
+    static class ViewHolder {
+        TextView clubName;
+        TextView clubDesc;
     }
+
     public class ClubsListAdapter extends ArrayAdapter<JSONObject> {
         Context context;
         JSONArray values;
+        LayoutInflater inflater;
+        int rowViewId;
 
         public ClubsListAdapter(Context context, int resource, JSONArray values) {
             super(context, resource);
             this.context = context;
+            this.rowViewId = resource;
             this.values = values;
+            this.inflater = (LayoutInflater) context
+                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
 
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
-            LayoutInflater inflater = (LayoutInflater) context
-                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            viewHolder holder;
-            if(convertView==null) {
-               convertView = inflater.inflate(R.layout.clubs_row_view, parent, false);
-                holder = new viewHolder();
-                holder.ClubName = (TextView) convertView.findViewById(R.id.clubName);
-                holder.ClubDesc = (TextView) convertView.findViewById(R.id.clubDesc);
+            ViewHolder holder;
+            if (convertView == null) {
+                convertView = inflater.inflate(rowViewId, parent, false);
+                holder = new ViewHolder();
+                holder.clubName = (TextView) convertView.findViewById(R.id.clubName);
+                holder.clubDesc = (TextView) convertView.findViewById(R.id.clubDesc);
                 convertView.setTag(holder);
-            }
-            else{
-                holder=(viewHolder)convertView.getTag();
+            } else {
+                holder = (ViewHolder) convertView.getTag();
             }
             try {
-                holder.ClubName.setText(values.getJSONObject(position).getString("kulup_ad"));
-                holder.ClubDesc.setText(values.getJSONObject(position).getString("kulup_aciklama"));
-                Log.i("tr.edu.ybu.eventybu", values.getJSONObject(position).getString("kulup_ad") + ": " + values.getJSONObject(position).getString("kulup_aciklama"));
-                holder.ClubDesc.setMovementMethod(new ScrollingMovementMethod());
+                String clubNameString = values.getJSONObject(position).getString("kulup_ad");
+                String clubDescString = values.getJSONObject(position).getString("kulup_aciklama");
+                clubDescString = clubDescString.equals("null") ? " " : clubDescString;
+                holder.clubName.setText(clubNameString);
+                holder.clubDesc.setText(clubDescString);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
